@@ -1,24 +1,12 @@
-# Base image (OS)
-
-FROM python:3.14-slim
-
-# Working directory
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# Copy src code to container
+COPY requirements.txt .
+RUN python -m pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Run the build commands
-
-RUN pip install -r requirements.txt
-
-# expose port 80
-
 EXPOSE 80
 
-# serve the app / run the app (keep it running)
-
-CMD ["python","run.py"]
-
+CMD ["gunicorn", "--bind", "0.0.0.0:80", "--workers", "2", "run:app"]

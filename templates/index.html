@@ -8,81 +8,108 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             min-height: 100vh;
+            padding: 30px 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
             color: #e0e0e0;
         }
-        .container {
-            text-align: center;
-            padding: 2rem;
-            max-width: 640px;
-        }
+        .container { text-align: center; padding: 2rem; max-width: 720px; width: 100%; }
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            font-size: clamp(2rem, 6vw, 2.5rem);
+            margin-bottom: .5rem;
             background: linear-gradient(90deg, #00d2ff, #7b2ff7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .badge {
-            display: inline-block;
-            margin: 1rem 0 2rem;
-            padding: 0.4rem 1.2rem;
-            border: 1px solid #7b2ff7;
-            border-radius: 999px;
-            font-size: 0.9rem;
-            color: #c4b5fd;
-            letter-spacing: 0.05em;
+            display: inline-block; margin: 1rem 0 2rem; padding: .4rem 1.2rem;
+            border: 1px solid #7b2ff7; border-radius: 999px;
+            font-size: .9rem; color: #c4b5fd; letter-spacing: .05em;
         }
-        .cards {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+        .cards { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
         .card {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem 1.8rem;
-            min-width: 150px;
-            flex: 1;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 12px; padding: 1.5rem 1.8rem; min-width: 150px; flex: 1;
         }
         .card span {
-            display: block;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #9ca3af;
-            margin-bottom: 0.4rem;
+            display: block; font-size: .75rem; text-transform: uppercase;
+            letter-spacing: .1em; color: #9ca3af; margin-bottom: .4rem;
         }
-        .card strong {
-            font-size: 1.25rem;
-            color: #f9fafb;
+        .card strong { font-size: 1.15rem; color: #f9fafb; }
+        .panel {
+            margin-top: 1.5rem; padding: 1.5rem; text-align: left;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.12); border-radius: 12px;
         }
+        h2 { font-size: 1.25rem; margin-bottom: 1rem; color: #fff; }
+        textarea {
+            width: 100%; min-height: 100px; resize: vertical; padding: 12px;
+            border-radius: 8px; border: 1px solid #6257a5;
+            background: #171536; color: white; font: inherit;
+        }
+        button {
+            margin-top: 10px; padding: 11px 20px; border: 0; border-radius: 8px;
+            background: linear-gradient(90deg, #00a8cc, #7b2ff7);
+            color: white; font-weight: 700; cursor: pointer;
+        }
+        button:hover { opacity: .9; }
+        .notice { margin: 0 0 1rem; padding: 10px; border-radius: 8px; background: #24243e; }
+        .message {
+            margin-top: 12px; padding: 12px; border-radius: 8px;
+            background: rgba(255,255,255,.05); overflow-wrap: anywhere;
+        }
+        .message p { white-space: pre-wrap; }
+        .message small { display: block; color: #a5b4fc; margin-top: 8px; }
+        .empty { color: #b9b6d6; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <main class="container">
         <h1>DevOps Zero To Hero</h1>
         <div class="badge">Josh Batch 10</div>
+
         <div class="cards">
-            <div class="card">
-                <span>Framework</span>
-                <strong>Flask 3.1</strong>
-            </div>
-            <div class="card">
-                <span>Runtime</span>
-                <strong>Python 3.14</strong>
-            </div>
-            <div class="card">
-                <span>Deploy</span>
-                <strong>AWS ECS</strong>
-            </div>
+            <div class="card"><span>Framework</span><strong>Flask 3.1</strong></div>
+            <div class="card"><span>Runtime</span><strong>Python 3.12</strong></div>
+            <div class="card"><span>Deploy</span><strong>Docker + MySQL</strong></div>
         </div>
-    </div>
+
+        <section class="panel">
+            <h2>Send a message</h2>
+
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+                <div class="notice">{{ message }}</div>
+            {% endfor %}
+            {% for message in get_flashed_messages() %}
+                <div class="notice">{{ message }}</div>
+            {% endfor %}
+
+            <form method="POST" action="/">
+                <label for="message">Your message</label>
+                <textarea id="message" name="message" maxlength="5000"
+                          placeholder="Type something to save in MySQL..." required></textarea>
+                <button type="submit">Save message</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Saved messages ({{ messages|length }})</h2>
+            {% if messages %}
+                {% for item in messages %}
+                    <article class="message">
+                        <p>{{ item.message }}</p>
+                        <small>Message #{{ item.id }} · {{ item.created_at }}</small>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p class="empty">No messages yet. Submit your first message above.</p>
+            {% endif %}
+        </section>
+    </main>
 </body>
 </html>
