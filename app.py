@@ -1,10 +1,12 @@
 import os
+
 import mysql.connector
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, flash, redirect, render_template, request, url_for
 
 app = Flask(__name__)
 
-app.secret_key =os.environ["FLASK_SECRET_KEY"]
+app.secret_key = os.environ["FLASK_SECRET_KEY"]
+
 
 def get_db_connection():
     return mysql.connector.connect(
